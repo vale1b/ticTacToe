@@ -1,8 +1,23 @@
-# React + Vite
+Tic-Tac-Toe ✨
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Caracteristicas 🎲
+	- localStorage: Guarda el estado del juego para que puedas continuar donde lo dejaste.
+	- Confetti: ¡Celebra la victoria con una lluvia de confeti!
+	- Reset: Reinica el juego con un solo clic.
 
-Currently, two official plugins are available:
+Componentes 🧩
+	- Square: Cada cuadro del tablero es un componente que muestra la X o la O segun el turno.
+	- Winner: Muestra el ganador y te permite reiniciar el juego.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Uso de React 🌀
+
+	- useState: Maneja el estado del tablero, el turno de los jugadores y el ganador.
+	- localStorage: Guarda el estado del juego y el turno del jugador.
+	- Canvas Confetti: Importa la animacion de tirar confeti para celebrar la victoria.
+
+¿Como jugar? 🎮
+
+	- Haz clic en los cuadros del tablero para colocar tu marca (X o O).
+	- Gana al completar una linea vertical, horizontal o diagonal de tu marca.
+	- Si el tablero se llena sin un ganador, ¡es un empate!
+
