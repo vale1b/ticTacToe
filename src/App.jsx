@@ -6,17 +6,25 @@ import confetti from 'canvas-confetti' // Importamos la animacion de tirar confe
 
 import { Square } from './components/Square.jsx' // Importamos el componente Square que renderizara nuestro tablero.
 import { TURNS } from './constants.js' // Importamos las constantes de los turnos y de la combinaciones ganadoras.
-import { checkWinnerFrom, checkEndGame } from './logic/board.js' // Importamos la logica para que el juego tenga un ganador.
+import { checkWinnerFrom, checkEndGame } from './logic/board.js' // Importamos la logica del juego.
 import { Winner } from './components/Winner.jsx'
 
 // Creamos el componente principal que renderizara nuestro tablero.
 function App() {
 
   // Usamos el hook useState para poder actualizar el tablero, el hook recibe como parametro un array de 9 posiciones con valores nulos en sus posiciones.
-  const [board, setBoard] = useState(Array(9).fill(null))
+  // Utilizamos localStorage para guardar la partida.
+  const [board, setBoard] = useState(() => {
+    const boardFromStorage = window.localStorage.getItem('board')
+    return boardFromStorage ? JSON.parse(boardFromStorage) : Array(9).fill(null)
+  })
 
   // Usamos el hook useState para poder cambiar el turno del jugador, el hook recibe como paramentro el valor inicial que seria la letra X.
-  const [turn, setTurn] = useState(TURNS.X)
+  // Utilizamos localStorage para guardar el turno del jugador.
+  const [turn, setTurn] = useState(() => {
+    const turnFromStorage = window.localStorage.getItem('turn')
+    return turnFromStorage ?? TURNS.X
+  })
 
   // Null es que no hay ganador, flase es que hay un empate y true es que algun jugador a ganado el juego.
   const [winner, setWinner] = useState(null)
@@ -26,6 +34,9 @@ function App() {
     setBoard(Array(9).fill(null))
     setTurn(TURNS.X)
     setWinner(null)
+
+    window.localStorage.removeItem('board')
+    window.localStorage.removeItem('turn')
   }
 
   const updateBoard = (index) => {
@@ -40,6 +51,10 @@ function App() {
     // newTurn sirve para cambiar el turno del jugador, si el turno esta en la X el proximo ser la O.
     const newTurn = turn == TURNS.X ? TURNS.O : TURNS.X
     setTurn(newTurn)
+
+    // Guardar aqui partida.
+    window.localStorage.setItem('board', JSON.stringify(newBoard))
+    window.localStorage.setItem('turn', turn)
 
     // Revisar si hay ganador.
     const newWinner = checkWinnerFrom(newBoard)
