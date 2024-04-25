@@ -2,39 +2,12 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import confetti from 'canvas-confetti' // Importamos la animacion de tirar confetti en caso de que haya un ganador.
 
-const TURNS = {
-  X: 'x',
-  O: 'o'
-}
-
-// Definimos la funcion square para poder dibujar cada cuadrado del tablero.
-const Square = ({children, isSelected, updateBoard, index}) => {
-  // Hacemos una clase condicional, se agregara la is-selected solo si isSelected es correcto.
-  const className = `square ${isSelected ? 'is-selected' : ''}`
-
-  const handleClick = () => {
-    updateBoard(index)
-  }
-
-  return (
-    <div onClick={handleClick} className={className}>
-      {children}
-    </div>
-  )
-}
-
-// Creamos un array con todas las combinaciones ganadoras.
-const WINNER_COMBOS = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-]
+import { Square } from './components/Square.jsx' // Importamos el componente Square que renderizara nuestro tablero.
+import { TURNS } from './constants.js' // Importamos las constantes de los turnos y de la combinaciones ganadoras.
+import { checkWinnerFrom, checkEndGame } from './logic/board.js' // Importamos la logica para que el juego tenga un ganador.
+import { Winner } from './components/Winner.jsx'
 
 // Creamos el componente principal que renderizara nuestro tablero.
 function App() {
@@ -48,35 +21,11 @@ function App() {
   // Null es que no hay ganador, flase es que hay un empate y true es que algun jugador a ganado el juego.
   const [winner, setWinner] = useState(null)
 
-  const checkWinner = (boardToCheck) => {
-
-    //Revisamos todas las combinaciones ganadoras para ver si X u O gano.
-    for (const combo of WINNER_COMBOS) {
-      const [a, b, c] = combo
-      if (
-        boardToCheck[a] && // a => x u o
-        boardToCheck[a] === boardToCheck[b] && // si B es igual a A 
-        boardToCheck[a] === boardToCheck[c] // si C es igual a A quiere decir que tenemos un tres en raya.
-      ) {
-        return boardToCheck[a] // Esto indicara quien ha ganado el juego.
-      }
-    }
-
-    // Si no hay ganador.
-    return null
-  }
-
   // Reseteamos el juego a su estado inicial.
   const resetGame = () => {
     setBoard(Array(9).fill(null))
     setTurn(TURNS.X)
     setWinner(null)
-  }
-
-  const checkEndGame = (newBoard) => {
-
-    // Revisamos si hay empate, si no hay mas espacios vacios en el tablero.
-    return newBoard.every((square) => square !== null)
   }
 
   const updateBoard = (index) => {
@@ -93,8 +42,9 @@ function App() {
     setTurn(newTurn)
 
     // Revisar si hay ganador.
-    const newWinner = checkWinner(newBoard)
+    const newWinner = checkWinnerFrom(newBoard)
     if(newWinner) {
+      confetti()
       setWinner(newWinner)
     } else if (checkEndGame(newBoard)) {
       setWinner(false) // Empate
@@ -128,30 +78,8 @@ function App() {
           {TURNS.O}
         </Square> 
       </section>
-
-      {
-        winner !== null && (
-          <section className='winner'>
-            <div className='text'>
-              <h2>
-                {
-                  winner === false
-                    ? 'Empate'
-                    : 'Gano:'
-                }
-              </h2>
-
-              <header className='win'>
-                {winner && <Square>{winner}</Square>}
-              </header>
-              <footer>
-                <button onClick={resetGame}>Empezar de nuevo</button>
-              </footer>
-            </div>
-          </section>
-        )
-      }
-
+      
+      <Winner resetGame={resetGame} winner={winner} />
     </main>
   )
 }
